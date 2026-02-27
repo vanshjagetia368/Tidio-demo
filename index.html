@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMIS — Premium Skincare</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #F5EFE4;
+    --warm: #E8D8C0;
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --dark: #1A1410;
+    --mid: #3D2F20;
+    --text: #2C1F10;
+    --muted: #8B7355;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s ease, width 0.3s, height 0.3s;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 28px 60px;
+    mix-blend-mode: multiply;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.3em;
+    color: var(--dark);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cart {
+    font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--mid); text-decoration: none; transition: color 0.3s;
+  }
+  .nav-cart:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 140px 60px 80px;
+    position: relative; z-index: 2;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(4rem, 7vw, 8rem);
+    font-weight: 300;
+    line-height: 0.92;
+    color: var(--dark);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-desc {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--muted);
+    max-width: 380px;
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.7s forwards;
+  }
+  .hero-cta {
+    display: flex; gap: 20px; align-items: center;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+  .btn-primary {
+    background: var(--dark);
+    color: var(--cream);
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 18px 40px;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold); transform: translateY(-2px); }
+  .btn-secondary {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    border-bottom: 1px solid var(--warm);
+    padding-bottom: 2px;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .btn-secondary:hover { color: var(--gold); border-color: var(--gold); }
+
+  .hero-right {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-image-wrap {
+    width: 100%; height: 100%;
+    position: relative;
+    opacity: 0;
+    animation: heroReveal 1.4s ease 0.4s forwards;
+  }
+  .hero-image-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #D4A96A 0%, #8B6914 30%, #3D2010 70%, #1A0C06 100%);
+    z-index: 1;
+  }
+  .hero-product-blob {
+    position: absolute;
+    width: 340px; height: 340px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    background: radial-gradient(circle at 40% 30%, #F5EFE4 0%, #E8D8C0 40%, #C9A84C 100%);
+    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    animation: blobFloat 6s ease-in-out infinite;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-product-blob .jar-icon {
+    font-size: 5rem;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+  }
+  .hero-number {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22vw;
+    color: rgba(255,255,255,0.04);
+    z-index: 2;
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    background: var(--dark);
+    padding: 20px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-track {
+    display: inline-flex;
+    animation: marquee 20s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--gold);
+    padding: 0 60px;
+  }
+  .marquee-dot {
+    color: rgba(201,168,76,0.4);
+    padding: 0 10px;
+  }
+
+  /* PRODUCTS */
+  .section { padding: 120px 60px; }
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--dark);
+    margin-bottom: 70px;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .product-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--warm);
+    aspect-ratio: 3/4;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 36px;
+    cursor: none;
+    transition: transform 0.4s ease;
+  }
+  .product-card:hover { transform: scale(0.98); }
+  .product-card:hover .product-img { transform: scale(1.1) translateY(-10px); }
+  .product-card:hover .add-btn { opacity: 1; transform: translateY(0); }
+
+  .product-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .product-bg-1 { background: linear-gradient(160deg, #E8D0A0 0%, #C4955A 100%); }
+  .product-bg-2 { background: linear-gradient(160deg, #D4BFA0 0%, #8B6545 100%); }
+  .product-bg-3 { background: linear-gradient(160deg, #F0E4C8 0%, #D4A870 100%); }
+
+  .product-img {
+    position: absolute;
+    top: 30px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 6rem;
+    z-index: 1;
+    transition: transform 0.5s ease;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
+  }
+  .product-info { position: relative; z-index: 2; }
+  .product-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+  }
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .product-price {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.9);
+  }
+  .add-btn {
+    position: absolute;
+    top: 24px; right: 24px;
+    width: 44px; height: 44px;
+    background: var(--cream);
+    border: none;
+    font-size: 1.4rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    z-index: 3;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s, transform 0.3s, background 0.2s;
+  }
+  .add-btn:hover { background: var(--gold); }
+
+  /* FEATURE STRIP */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--dark);
+  }
+  .feature-item {
+    background: var(--dark);
+    padding: 60px 40px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.4s;
+  }
+  .feature-item:hover { background: #2C1F10; }
+  .feature-icon { font-size: 2rem; margin-bottom: 24px; }
+  .feature-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .feature-desc { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.8; }
+
+  /* TESTIMONIAL */
+  .testimonials {
+    background: var(--warm);
+    padding: 120px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonials::before {
+    content: '"';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40rem;
+    position: absolute;
+    top: -100px; left: -40px;
+    color: rgba(201,168,76,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 60px;
+  }
+  .testimonial {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .testimonial.visible { opacity: 1; transform: translateY(0); }
+  .stars { color: var(--gold); font-size: 0.8rem; letter-spacing: 4px; margin-bottom: 20px; }
+  .testimonial-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.8;
+    color: var(--mid);
+    margin-bottom: 24px;
+  }
+  .testimonial-author { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+  /* EMAIL CAPTURE */
+  .email-section {
+    background: var(--dark);
+    padding: 120px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .email-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+  .email-title em { font-style: italic; color: var(--gold); }
+  .email-form { display: flex; gap: 0; }
+  .email-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-right: none;
+    padding: 18px 24px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .email-input::placeholder { color: rgba(255,255,255,0.3); }
+  .email-input:focus { border-color: var(--gold); }
+  .email-submit {
+    background: var(--gold);
+    border: none;
+    padding: 18px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dark);
+    cursor: none;
+    transition: background 0.3s;
+  }
+  .email-submit:hover { background: var(--gold-light); }
+
+  /* FOOTER */
+  footer {
+    background: #0F0A06;
+    padding: 80px 60px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+  }
+  .footer-brand .nav-logo { display: block; margin-bottom: 20px; color: var(--cream); }
+  .footer-brand p { font-size: 0.82rem; color: rgba(255,255,255,0.35); line-height: 1.8; max-width: 240px; }
+  .footer-col h4 {
+    font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 12px; }
+  .footer-col ul li a {
+    font-size: 0.82rem; color: rgba(255,255,255,0.4);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .footer-col ul li a:hover { color: var(--cream); }
+  .footer-bottom {
+    background: #0F0A06;
+    padding: 24px 60px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p { font-size: 0.72rem; color: rgba(255,255,255,0.25); letter-spacing: 0.1em; }
+
+  /* CART SIDEBAR */
+  .cart-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,20,16,0.6);
+    z-index: 200;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(4px);
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+  .cart-sidebar {
+    position: fixed; top: 0; right: -420px; bottom: 0;
+    width: 420px;
+    background: var(--cream);
+    z-index: 201;
+    transition: right 0.5s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column;
+  }
+  .cart-sidebar.open { right: 0; }
+  .cart-header {
+    padding: 40px 36px 28px;
+    border-bottom: 1px solid var(--warm);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cart-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 400;
+  }
+  .cart-close {
+    background: none; border: none;
+    font-size: 1.4rem; cursor: none; color: var(--mid);
+  }
+  .cart-items { flex: 1; overflow-y: auto; padding: 24px 36px; }
+  .cart-item {
+    display: flex; gap: 16px; align-items: center;
+    padding: 20px 0; border-bottom: 1px solid var(--warm);
+    animation: fadeUp 0.4s ease;
+  }
+  .cart-item-icon { font-size: 2.5rem; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-bottom: 4px; }
+  .cart-item-price { font-size: 0.82rem; color: var(--muted); }
+  .cart-item-remove {
+    background: none; border: none; font-size: 1rem; color: var(--muted); cursor: none;
+    transition: color 0.2s;
+  }
+  .cart-item-remove:hover { color: var(--dark); }
+  .cart-footer {
+    padding: 28px 36px 40px;
+    border-top: 1px solid var(--warm);
+  }
+  .cart-total { display: flex; justify-content: space-between; margin-bottom: 24px; }
+  .cart-total span:first-child { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .cart-total span:last-child { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; }
+  .cart-checkout {
+    width: 100%; background: var(--dark); color: var(--cream);
+    border: none; padding: 18px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+    cursor: none; transition: background 0.3s;
+  }
+  .cart-checkout:hover { background: var(--gold); }
+  .cart-empty { text-align: center; padding: 60px 0; color: var(--muted); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--dark); color: var(--cream);
+    padding: 16px 32px; font-size: 0.78rem; letter-spacing: 0.15em;
+    opacity: 0; transition: all 0.4s; z-index: 300;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes heroReveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+    33% { transform: translate(-50%, -55%) rotate(5deg); border-radius: 50% 50% 40% 60% / 60% 40% 55% 45%; }
+    66% { transform: translate(-50%, -45%) rotate(-5deg); border-radius: 40% 60% 60% 40% / 50% 50% 50% 50%; }
+  }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>Your Ritual</h2>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p class="cart-empty">Your ritual awaits.</p>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cartTotal">$0.00</span>
+    </div>
+    <button class="cart-checkout">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">LUMIS</a>
+  <ul class="nav-links">
+    <li><a href="#products">Collection</a></li>
+    <li><a href="#about">Ritual</a></li>
+    <li><a href="#testimonials">Stories</a></li>
+  </ul>
+  <a href="#" class="nav-cart" id="cartBtn">Bag (0)</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Est. 2024 · Science of Luminosity</p>
+    <h1 class="hero-title">The Art of<br><em>Radiant</em><br>Skin</h1>
+    <p class="hero-desc">Crafted at the intersection of botanical wisdom and modern biotechnology. Each formula is a meditation on what skin can become.</p>
+    <div class="hero-cta">
+      <a href="#products" class="btn-primary">Explore Collection</a>
+      <a href="#about" class="btn-secondary">Our Philosophy</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image-wrap">
+      <span class="hero-number">I</span>
+      <div class="hero-product-blob">
+        <span class="jar-icon">🫧</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item">Radiance Ritual</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Botanical Intelligence</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Luminous Skin</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Biometric Formulas</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Gold-Standard Care</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">The Lumis Method</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Radiance Ritual</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Botanical Intelligence</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Luminous Skin</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Biometric Formulas</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">Gold-Standard Care</span><span class="marquee-dot">◆</span>
+    <span class="marquee-item">The Lumis Method</span><span class="marquee-dot">◆</span>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <p class="section-label reveal">The Collection</p>
+  <h2 class="section-title reveal">Formulas for <em>Every</em><br>Skin Chapter</h2>
+  <div class="products-grid">
+    <div class="product-card reveal" data-name="Velvet Serum" data-price="128" data-icon="✨">
+      <div class="product-bg product-bg-1"></div>
+      <span class="product-img">✨</span>
+      <button class="add-btn" data-name="Velvet Serum" data-price="128" data-icon="✨">+</button>
+      <div class="product-info">
+        <p class="product-tag">Brightening · 30ml</p>
+        <h3 class="product-name">Velvet Serum</h3>
+        <p class="product-price">$128</p>
+      </div>
+    </div>
+    <div class="product-card reveal" data-name="Golden Elixir" data-price="196" data-icon="🌿">
+      <div class="product-bg product-bg-2"></div>
+      <span class="product-img">🌿</span>
+      <button class="add-btn" data-name="Golden Elixir" data-price="196" data-icon="🌿">+</button>
+      <div class="product-info">
+        <p class="product-tag">Anti-Aging · 50ml</p>
+        <h3 class="product-name">Golden Elixir</h3>
+        <p class="product-price">$196</p>
+      </div>
+    </div>
+    <div class="product-card reveal" data-name="Dew Cream" data-price="88" data-icon="💧">
+      <div class="product-bg product-bg-3"></div>
+      <span class="product-img">💧</span>
+      <button class="add-btn" data-name="Dew Cream" data-price="88" data-icon="💧">+</button>
+      <div class="product-info">
+        <p class="product-tag">Hydration · 60ml</p>
+        <h3 class="product-name">Dew Cream</h3>
+        <p class="product-price">$88</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features" id="about">
+  <div class="feature-item reveal">
+    <div class="feature-icon">🧬</div>
+    <h3 class="feature-title">Bioactive Formulas</h3>
+    <p class="feature-desc">Each ingredient is selected for proven efficacy at cellular level, not for trend or fragrance.</p>
+  </div>
+  <div class="feature-item reveal">
+    <div class="feature-icon">🌱</div>
+    <h3 class="feature-title">Sustainably Sourced</h3>
+    <p class="feature-desc">Botanicals harvested from regenerative farms in partnership with local communities worldwide.</p>
+  </div>
+  <div class="feature-item reveal">
+    <div class="feature-icon">🔬</div>
+    <h3 class="feature-title">Clinically Verified</h3>
+    <p class="feature-desc">Dermatologist-tested, third-party verified results. No claims we cannot substantiate.</p>
+  </div>
+  <div class="feature-item reveal">
+    <div class="feature-icon">✦</div>
+    <h3 class="feature-title">Lifetime Ritual</h3>
+    <p class="feature-desc">A complimentary skin consultation with every first order. Guidance, always.</p>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <p class="section-label reveal">From Our Community</p>
+  <h2 class="section-title reveal"><em>Stories</em> of Transformation</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="stars">★ ★ ★ ★ ★</div>
+      <p class="testimonial-text">"Three weeks in and my skin looks like it's lit from within. The Velvet Serum is unlike anything I've ever used — it disappears instantly and the glow lasts all day."</p>
+      <p class="testimonial-author">— Amara K., Lagos</p>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★ ★ ★ ★ ★</div>
+      <p class="testimonial-text">"I've spent years searching for something this refined. The Golden Elixir addressed my fine lines in ways that felt impossibly fast. My skin consultant was also extraordinary."</p>
+      <p class="testimonial-author">— Isabelle M., Paris</p>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★ ★ ★ ★ ★</div>
+      <p class="testimonial-text">"The Dew Cream saved my skin through a brutal winter. Completely non-greasy but so hydrating. This is my forever moisturizer — I'll never go back."</p>
+      <p class="testimonial-author">— Yuki T., Tokyo</p>
+    </div>
+  </div>
+</section>
+
+<!-- EMAIL -->
+<section class="email-section">
+  <div>
+    <p class="section-label" style="color:var(--gold);margin-bottom:16px;font-size:0.7rem;letter-spacing:0.4em;text-transform:uppercase;">Join the Inner Circle</p>
+    <h2 class="email-title">Discover your skin's<br><em>true potential</em></h2>
+  </div>
+  <div>
+    <p style="color:rgba(255,255,255,0.45);font-size:0.88rem;line-height:1.8;margin-bottom:32px;">Subscribe for early access, exclusive rituals, and the wisdom of our formulation team delivered to your inbox.</p>
+    <div class="email-form">
+      <input type="email" class="email-input" placeholder="your@email.com" id="emailInput">
+      <button class="email-submit" id="emailSubmit">Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a href="#" class="nav-logo" style="color:var(--cream)">LUMIS</a>
+    <p>Crafted with intention. Formulated with science. Made for skin that deserves the very best.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Collection</h4>
+    <ul>
+      <li><a href="#">Velvet Serum</a></li>
+      <li><a href="#">Golden Elixir</a></li>
+      <li><a href="#">Dew Cream</a></li>
+      <li><a href="#">Gift Sets</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Company</h4>
+    <ul>
+      <li><a href="#">Our Story</a></li>
+      <li><a href="#">Ingredients</a></li>
+      <li><a href="#">Sustainability</a></li>
+      <li><a href="#">Press</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="#">Skin Consultation</a></li>
+      <li><a href="#">Returns</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2024 LUMIS. All rights reserved.</p>
+  <p>Designed with intention.</p>
+</div>
+
+<script>
+// ─── CURSOR ───────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx - 6 + 'px';
+  cursor.style.top = my - 6 + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx - 18 + 'px';
+  ring.style.top = ry - 18 + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'scale(2)';
+    ring.style.width = '60px'; ring.style.height = '60px';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'scale(1)';
+    ring.style.width = '36px'; ring.style.height = '36px';
+  });
+});
+
+// ─── CART ─────────────────────────────────────────
+let cart = [];
+const cartOverlay = document.getElementById('cartOverlay');
+const cartSidebar = document.getElementById('cartSidebar');
+const cartBtn = document.getElementById('cartBtn');
+const cartClose = document.getElementById('cartClose');
+const cartItemsEl = document.getElementById('cartItems');
+const cartTotalEl = document.getElementById('cartTotal');
+
+function openCart() {
+  cartOverlay.classList.add('open');
+  cartSidebar.classList.add('open');
+}
+function closeCart() {
+  cartOverlay.classList.remove('open');
+  cartSidebar.classList.remove('open');
+}
+
+cartBtn.addEventListener('click', e => { e.preventDefault(); openCart(); });
+cartClose.addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', closeCart);
+
+function renderCart() {
+  cartBtn.textContent = `Bag (${cart.length})`;
+  if (cart.length === 0) {
+    cartItemsEl.innerHTML = '<p class="cart-empty">Your ritual awaits.</p>';
+    cartTotalEl.textContent = '$0.00';
+    return;
+  }
+  const total = cart.reduce((s, i) => s + i.price, 0);
+  cartTotalEl.textContent = `$${total.toFixed(2)}`;
+  cartItemsEl.innerHTML = cart.map((item, idx) => `
+    <div class="cart-item">
+      <span class="cart-item-icon">${item.icon}</span>
+      <div class="cart-item-info">
+        <p class="cart-item-name">${item.name}</p>
+        <p class="cart-item-price">$${item.price}</p>
+      </div>
+      <button class="cart-item-remove" data-idx="${idx}">✕</button>
+    </div>
+  `).join('');
+  cartItemsEl.querySelectorAll('.cart-item-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cart.splice(+btn.dataset.idx, 1);
+      renderCart();
+    });
+  });
+}
+
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    cart.push({ name: btn.dataset.name, price: +btn.dataset.price, icon: btn.dataset.icon });
+    renderCart();
+    showToast(`${btn.dataset.name} added to bag`);
+  });
+});
+
+// ─── TOAST ────────────────────────────────────────
+const toast = document.getElementById('toast');
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── EMAIL ────────────────────────────────────────
+document.getElementById('emailSubmit').addEventListener('click', () => {
+  const val = document.getElementById('emailInput').value;
+  if (val && val.includes('@')) {
+    showToast('Welcome to the inner circle ✦');
+    document.getElementById('emailInput').value = '';
+  } else {
+    showToast('Please enter a valid email');
+  }
+});
+
+// ─── SCROLL REVEAL ────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal, .testimonial');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 120);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
